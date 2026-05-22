@@ -8,6 +8,10 @@
 <script src="https://use.fontawesome.com/119dcfea6f.js"></script>
 
   <style type="text/css">
+    html, body {
+      height: 100%;
+    }
+
     a {
       text-decoration: none;
       color: #b6d8f6;
@@ -16,29 +20,48 @@
     body {
       font-family: "Helvetica Neue", Arial, sans-serif;
       color: #fff;
-      background-color: #0D111A;
-      margin-top: 100px;
+      background: radial-gradient(ellipse at 50% 120%, #1a1340 0%, #0D111A 60%, #06080d 100%);
+      margin: 0;
+      padding-top: 100px;
+      overflow: hidden;
+      min-height: 100vh;
     }
 
     body p {
       margin: 0 auto;
       color: #FFF;
       text-align: center;
+      position: relative;
+      z-index: 10;
     }
 
     body p.logo {
       font-size: 80px;
       font-weight: 900;
       line-height: 1;
-      /* letter-spacing: -2pt; */
       text-rendering: optimizeLegibility;
-      /* font-family: 'Helvetica', cursive; */
-      background: -webkit-linear-gradient(45deg, #5cb3ed, #ef3784);
-      text-shadow: 0 0 2vw rgba(255,255,255,0.2);
-      -webkit-background-clip: text; /* Doesn't work on IE*/
+      background: linear-gradient(110deg,
+        #5cb3ed 0%,
+        #b6d8f6 18%,
+        #c8b6f7 38%,
+        #a78bfa 55%,
+        #c8b6f7 72%,
+        #b6d8f6 88%,
+        #5cb3ed 100%);
+      background-size: 250% 100%;
+      background-position: 0% 50%;
+      -webkit-background-clip: text;
         -moz-background-clip: text;
               background-clip: text;
       -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 18px rgba(140, 170, 240, 0.35));
+      animation: shimmer 14s ease-in-out infinite;
+    }
+
+    @keyframes shimmer {
+      0%   { background-position:   0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position:   0% 50%; }
     }
 
     body p.social {
@@ -50,35 +73,68 @@
       margin: 5px;
     }
 
-    body p.woodworking {
-      margin-top: 1.5em;
-    }
-    body p.woodworking a:hover {
-      text-decoration: underline;
+    #bubbles {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 1;
     }
 
-    /* https://codersblock.com/blog/creating-glow-effects-with-css/ */
-    div {
-  position: absolute;
-  top: calc(40% - 150px);
-  left: calc(50% - 150px);
-  width: 300px;
-  height: 300px;
-  border-radius: 50%;
-  opacity: 0.3;
-  box-shadow:
-    inset 0 0 50px #fff,
-    inset 20px 0 80px #f0f,
-    inset -20px 0 80px #0ff,
-    inset 20px 0 300px #f0f,
-    inset -20px 0 300px #0ff,
-    0 0 50px #fff,
-    -10px 0 80px #f0f,
-    10px 0 80px #0ff;
-}
+    .bubble {
+      position: absolute;
+      bottom: -20vh;
+      border-radius: 50%;
+      will-change: transform, opacity;
+      animation: rise var(--duration) linear forwards;
+      background: radial-gradient(circle at center,
+        hsla(var(--hue), 100%, 95%, 0.95) 0%,
+        hsla(var(--hue), 100%, 78%, 0.55) 12%,
+        hsla(var(--hue), 95%, 65%, 0.25) 30%,
+        hsla(calc(var(--hue) + 20), 90%, 55%, 0.08) 55%,
+        hsla(calc(var(--hue) + 30), 80%, 50%, 0) 75%);
+      filter: blur(var(--blur));
+      mix-blend-mode: screen;
+      opacity: 0;
+    }
+
+    @keyframes rise {
+      0% {
+        transform: translate(0, 0) scale(0.9);
+        opacity: 0;
+      }
+      8% {
+        opacity: var(--peak-opacity);
+      }
+      22% {
+        transform: translate(calc(var(--drift) * -0.45), -22vh) scale(1);
+      }
+      45% {
+        transform: translate(calc(var(--drift) * 0.65), -45vh) scale(1.05);
+        opacity: var(--peak-opacity);
+      }
+      66% {
+        transform: translate(calc(var(--drift) * -0.25), -66vh) scale(1.1);
+        opacity: calc(var(--peak-opacity) * 0.7);
+      }
+      90% {
+        opacity: 0;
+        transform: translate(var(--drift), -90vh) scale(1.15);
+      }
+      100% {
+        transform: translate(var(--drift), -100vh) scale(1.2);
+        opacity: 0;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .bubble { animation: none; display: none; }
+    }
   </style>
 </head>
 <body>
+  <div id="bubbles" aria-hidden="true"></div>
+
   <p class="logo">sebastian<br>wallin</p>
   <p class="social">
     <a href="https://linkedin.com/in/sebwal" target="_blank">
@@ -88,8 +144,52 @@
       <i class="fa fa-github-square"></i>
     </a>
   </p>
-  <p class="woodworking">
-    <a href="https://wood.wallin.io">Follow my woodworking!</a>
-  </p>
+
+  <script>
+    (function () {
+      const container = document.getElementById('bubbles');
+      const rand = (min, max) => Math.random() * (max - min) + min;
+
+      function spawn(preAge) {
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble';
+
+        const size = rand(20, 220);
+        const depth = Math.random();
+        const blur = depth < 0.3
+          ? rand(0.5, 3)
+          : depth < 0.7
+            ? rand(4, 14)
+            : rand(18, 40);
+
+        const startX = rand(-5, 105);
+        const drift = rand(-180, 180);
+        const duration = rand(16, 32);
+        const hue = rand(205, 285);
+        const peakOpacity = rand(0.35, 0.85) * (1 - depth * 0.3);
+        const age = preAge != null ? preAge * duration : 0;
+
+        bubble.style.width = size + 'px';
+        bubble.style.height = size + 'px';
+        bubble.style.left = startX + 'vw';
+        bubble.style.setProperty('--blur', blur + 'px');
+        bubble.style.setProperty('--drift', drift + 'px');
+        bubble.style.setProperty('--duration', duration + 's');
+        bubble.style.setProperty('--hue', hue);
+        bubble.style.setProperty('--peak-opacity', peakOpacity);
+        if (age > 0) bubble.style.animationDelay = -age + 's';
+
+        container.appendChild(bubble);
+        setTimeout(() => bubble.remove(), (duration - age) * 1000 + 200);
+      }
+
+      // Pre-populate with bubbles already partway through their animation
+      // so the screen is full on first paint.
+      for (let i = 0; i < 25; i++) {
+        spawn(Math.random() * 0.85);
+      }
+      setInterval(spawn, 700);
+    })();
+  </script>
 </body>
 </html>
