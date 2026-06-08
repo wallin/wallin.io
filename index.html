@@ -3,192 +3,547 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Sebastian Wallin — engineer, builder.">
   <title>wallin.io</title>
 
-<script src="https://use.fontawesome.com/119dcfea6f.js"></script>
-
-  <style type="text/css">
-    html, body {
-      height: 100%;
-    }
-
-    a {
-      text-decoration: none;
-      color: #b6d8f6;
-    }
+  <script src="https://use.fontawesome.com/119dcfea6f.js"></script>
+  <style>
+    a { text-decoration: none; }
 
     body {
       font-family: "Helvetica Neue", Arial, sans-serif;
       color: #fff;
-      background: radial-gradient(ellipse at 50% 120%, #1a1340 0%, #0D111A 60%, #06080d 100%);
+      background: #04060c;
       margin: 0;
-      padding-top: 100px;
       overflow: hidden;
       min-height: 100vh;
     }
 
-    body p {
-      margin: 0 auto;
-      color: #FFF;
-      text-align: center;
-      position: relative;
-      z-index: 10;
+    .topbar {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      right: 16px;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      height: 22px;
     }
 
-    body p.logo {
-      font-size: 80px;
-      font-weight: 900;
+    .logo {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
       line-height: 1;
+      margin: 0;
       text-rendering: optimizeLegibility;
-      background: linear-gradient(110deg,
-        #5cb3ed 0%,
-        #b6d8f6 18%,
-        #c8b6f7 38%,
-        #a78bfa 55%,
-        #c8b6f7 72%,
-        #b6d8f6 88%,
-        #5cb3ed 100%);
-      background-size: 250% 100%;
-      background-position: 0% 50%;
-      -webkit-background-clip: text;
-        -moz-background-clip: text;
-              background-clip: text;
-      -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 0 18px rgba(140, 170, 240, 0.35));
-      animation: shimmer 14s ease-in-out infinite;
+      color: rgba(255, 255, 255, 0.88);
+      filter: drop-shadow(0 0 6px rgba(200, 220, 255, 0.4));
     }
 
-    @keyframes shimmer {
-      0%   { background-position:   0% 50%; }
-      50%  { background-position: 100% 50%; }
-      100% { background-position:   0% 50%; }
+    .logo .social {
+      margin-left: 10px;
+      font-size: 17px;
     }
 
-    body p.social {
-      font-size: 30px;
-      margin-top: 20px;
+    .logo .social a {
+      color: rgba(255, 255, 255, 0.4);
+      transition: color 0.2s;
     }
 
-    body p.social i {
-      margin: 5px;
+    .logo .social a:hover {
+      color: rgba(255, 255, 255, 0.8);
     }
 
-    #bubbles {
+    .logo .social i {
+      margin: 0 3px;
+    }
+
+    .toolbar {
+      margin-left: auto;
+    }
+
+    .toolbar svg {
+      width: 18px;
+      height: 18px;
+      color: rgba(255, 255, 255, 0.45);
+      cursor: pointer;
+      transition: color 0.2s;
+      display: block;
+    }
+
+    .toolbar svg:hover {
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    #sky {
       position: fixed;
       inset: 0;
-      overflow: hidden;
-      pointer-events: none;
-      z-index: 1;
-    }
-
-    .bubble {
-      position: absolute;
-      bottom: -20vh;
-      border-radius: 50%;
-      will-change: transform, opacity;
-      animation: rise var(--duration) linear forwards;
-      background: radial-gradient(circle at center,
-        hsla(var(--hue), 100%, 95%, 0.95) 0%,
-        hsla(var(--hue), 100%, 78%, 0.55) 12%,
-        hsla(var(--hue), 95%, 65%, 0.25) 30%,
-        hsla(calc(var(--hue) + 20), 90%, 55%, 0.08) 55%,
-        hsla(calc(var(--hue) + 30), 80%, 50%, 0) 75%);
-      filter: blur(var(--blur));
-      mix-blend-mode: screen;
-      opacity: 0;
-    }
-
-    @keyframes rise {
-      0% {
-        transform: translate(0, 0) scale(0.9);
-        opacity: 0;
-      }
-      8% {
-        opacity: var(--peak-opacity);
-      }
-      22% {
-        transform: translate(calc(var(--drift) * -0.45), -22vh) scale(1);
-      }
-      45% {
-        transform: translate(calc(var(--drift) * 0.65), -45vh) scale(1.05);
-        opacity: var(--peak-opacity);
-      }
-      66% {
-        transform: translate(calc(var(--drift) * -0.25), -66vh) scale(1.1);
-        opacity: calc(var(--peak-opacity) * 0.7);
-      }
-      90% {
-        opacity: 0;
-        transform: translate(var(--drift), -90vh) scale(1.15);
-      }
-      100% {
-        transform: translate(var(--drift), -100vh) scale(1.2);
-        opacity: 0;
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .bubble { animation: none; display: none; }
+      z-index: 0;
+      display: block;
+      background: #04060c;
     }
   </style>
 </head>
 <body>
-  <div id="bubbles" aria-hidden="true"></div>
+  <canvas id="sky" aria-hidden="true"></canvas>
 
-  <p class="logo">sebastian<br>wallin</p>
-  <p class="social">
-    <a href="https://linkedin.com/in/sebwal" target="_blank">
-      <i class="fa fa-linkedin-square"></i>
-    </a>
-    <a href="https://github.com/wallin" target="_blank">
-      <i class="fa fa-github-square"></i>
-    </a>
-  </p>
+  <div class="topbar">
+    <p class="logo">sebastian wallin <span class="social"><a href="https://linkedin.com/in/sebwal" target="_blank" rel="noopener"><i class="fa fa-linkedin-square"></i></a><a href="https://github.com/wallin" target="_blank" rel="noopener"><i class="fa fa-github-square"></i></a><a href="https://www.instagram.com/byggvalpen/" target="_blank" rel="noopener"><i class="fa fa-instagram"></i></a></span></p>
+    <div class="toolbar">
+      <svg id="btn-fs" title="Toggle fullscreen" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 15 6 6"/><path d="m15 9 6-6"/><path d="M21 16v5h-5"/><path d="M21 8V3h-5"/><path d="M3 16v5h5"/><path d="m3 21 6-6"/><path d="M3 8V3h5"/><path d="M9 9 3 3"/></svg>
+    </div>
+  </div>
 
   <script>
     (function () {
-      const container = document.getElementById('bubbles');
-      const rand = (min, max) => Math.random() * (max - min) + min;
+      const sky = document.getElementById('sky');
+      const skyCtx = sky.getContext('2d');
 
-      function spawn(preAge) {
-        const bubble = document.createElement('div');
-        bubble.className = 'bubble';
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
-        const size = rand(20, 220);
-        const depth = Math.random();
-        const blur = depth < 0.3
-          ? rand(0.5, 3)
-          : depth < 0.7
-            ? rand(4, 14)
-            : rand(18, 40);
+      // ---- observer + camera --------------------------------------------------
+      // Observer at 55° N, 13° E (southern Sweden). Longitude only affects which
+      // RA happens to be on the meridian at t=0, so it's just a phase offset.
+      const LAT = 55 * Math.PI / 180;
+      const LON = 13 * Math.PI / 180;
 
-        const startX = rand(-5, 105);
-        const drift = rand(-180, 180);
-        const duration = rand(16, 32);
-        const hue = rand(205, 285);
-        const peakOpacity = rand(0.35, 0.85) * (1 - depth * 0.3);
-        const age = preAge != null ? preAge * duration : 0;
+      // Camera tilted close to the zenith (more perpendicular to the ground
+      // than pointed at Polaris). Combined with a projection origin pushed
+      // toward the bottom of the screen (see `cy` in resize()), this lands
+      // the celestial pole just past the bottom edge, so all visible stars
+      // appear to rotate around an unseen centre below the frame.
+      const VIEW_AZ  = 0;                            // north
+      const VIEW_ALT = 80 * Math.PI / 180;           // close to zenith
 
-        bubble.style.width = size + 'px';
-        bubble.style.height = size + 'px';
-        bubble.style.left = startX + 'vw';
-        bubble.style.setProperty('--blur', blur + 'px');
-        bubble.style.setProperty('--drift', drift + 'px');
-        bubble.style.setProperty('--duration', duration + 's');
-        bubble.style.setProperty('--hue', hue);
-        bubble.style.setProperty('--peak-opacity', peakOpacity);
-        if (age > 0) bubble.style.animationDelay = -age + 's';
+      // Pre-compute camera basis (forward / right / up) in the observer's local
+      // east-north-up frame. These vectors are fixed for the whole animation.
+      const cFx = Math.cos(VIEW_ALT) * Math.sin(VIEW_AZ);
+      const cFy = Math.cos(VIEW_ALT) * Math.cos(VIEW_AZ);
+      const cFz = Math.sin(VIEW_ALT);
+      // R = normalize(F × worldUp) where worldUp = (0,0,1)
+      const _rx = cFy, _ry = -cFx, _rz = 0;
+      const _rl = Math.hypot(_rx, _ry, _rz) || 1;
+      const cRx = _rx / _rl, cRy = _ry / _rl, cRz = _rz / _rl;
+      // U = R × F
+      const cUx = cRy * cFz - cRz * cFy;
+      const cUy = cRz * cFx - cRx * cFz;
+      const cUz = cRx * cFy - cRy * cFx;
 
-        container.appendChild(bubble);
-        setTimeout(() => bubble.remove(), (duration - age) * 1000 + 200);
+      // Rotation cycle — one sidereal day compressed to 180 s.
+      const CYCLE_MS = 180000;
+
+      let W = 0, H = 0, cx = 0, cy = 0, fovScale = 0;
+      let stars = [];
+      const startTime = performance.now();
+
+      function rand(a, b) { return a + Math.random() * (b - a); }
+
+      function rgba(c, a) {
+        return 'rgba(' + (c[0] | 0) + ',' + (c[1] | 0) + ',' + (c[2] | 0) +
+               ',' + a + ')';
       }
 
-      // Pre-populate with bubbles already partway through their animation
-      // so the screen is full on first paint.
-      for (let i = 0; i < 25; i++) {
-        spawn(Math.random() * 0.85);
+      function lerp(a, b, t) {
+        return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
       }
-      setInterval(spawn, 700);
+
+      // Realistic stellar color distribution. The "warm" classes are
+      // intentionally desaturated so even the orange/red giants in the
+      // background read more as warm-white than ruddy.
+      function starColor() {
+        const t = Math.random();
+        if (t < 0.55) return [255, 255, 255];
+        if (t < 0.78) return [210, 226, 255];
+        if (t < 0.92) return [255, 240, 220];
+        if (t < 0.98) return [255, 220, 190];
+        return [255, 205, 180];
+      }
+
+      // ---- celestial → screen ------------------------------------------------
+      // Project a star at (ra, dec) given current local sidereal time `lst`.
+      // Returns null if the star is below the local horizon or outside the
+      // camera's visible hemisphere.
+      function project(ra, dec, lst, out) {
+        const ha = lst - ra;
+        const sd = Math.sin(dec), cd = Math.cos(dec);
+        const sH = Math.sin(ha),  cH = Math.cos(ha);
+        const sP = Math.sin(LAT), cP = Math.cos(LAT);
+
+        // Star unit vector in observer's east-north-up frame.
+        const east  = -cd * sH;
+        const north =  sd * cP - cd * sP * cH;
+        const up    =  sd * sP + cd * cP * cH;
+
+        if (up < -0.02) return null;             // below horizon
+
+        // Camera-space components.
+        const right = east * cRx + north * cRy + up * cRz;
+        const u     = east * cUx + north * cUy + up * cUz;
+        const fwd   = east * cFx + north * cFy + up * cFz;
+
+        // Stereographic projection from the antipode of the camera direction.
+        const denom = 1 + fwd;
+        if (denom < 0.05) return null;           // behind the camera
+
+        out.x = cx + (2 * right / denom) * fovScale;
+        out.y = cy - (2 * u     / denom) * fovScale;
+        out.alt = Math.asin(up);                  // for extinction
+        return out;
+      }
+
+      // ---- star catalog ------------------------------------------------------
+      // Approximate equatorial coordinates (J2000) for prominent stars. RA in
+      // hours, Dec in degrees. Intentionally a small selection — enough to
+      // make familiar shapes recognizable when they rotate through the frame.
+      const NAMED = [
+        // Polaris
+        { ra: 2.530,  dec: 89.264, mag: 0.85, color: [255, 245, 225] },
+        // Cassiopeia (W)
+        { ra: 0.675,  dec: 56.537, mag: 0.85 },
+        { ra: 0.150,  dec: 59.150, mag: 0.92 },
+        { ra: 0.945,  dec: 60.717, mag: 0.78 },
+        { ra: 1.430,  dec: 60.235, mag: 0.86 },
+        { ra: 1.906,  dec: 63.670, mag: 0.80 },
+        // Big Dipper (Ursa Major)
+        { ra: 11.062, dec: 61.751, mag: 0.85 },
+        { ra: 11.030, dec: 56.382, mag: 0.78 },
+        { ra: 11.897, dec: 53.695, mag: 0.78 },
+        { ra: 12.257, dec: 57.033, mag: 0.74 },
+        { ra: 12.900, dec: 55.960, mag: 0.86 },
+        { ra: 13.398, dec: 54.925, mag: 0.82 },
+        { ra: 13.792, dec: 49.313, mag: 0.86 },
+        // Cepheus (rough pentagon)
+        { ra: 21.310, dec: 62.585, mag: 0.78 },
+        { ra: 21.477, dec: 70.561, mag: 0.74 },
+        { ra: 22.495, dec: 66.200, mag: 0.74 },
+        { ra: 23.656, dec: 77.632, mag: 0.74 },
+        // Perseus
+        { ra: 3.405,  dec: 49.861, mag: 0.85, color: [255, 245, 220] },
+        // Auriga
+        { ra: 5.278,  dec: 45.998, mag: 0.95, color: [255, 240, 200] }, // Capella
+        // Taurus
+        { ra: 4.598,  dec: 16.509, mag: 0.92, color: [255, 220, 185] }, // Aldebaran
+        // Orion
+        { ra: 5.919,  dec:  7.407, mag: 0.95, color: [255, 200, 170] }, // Betelgeuse
+        { ra: 5.418,  dec:  6.350, mag: 0.78 },                          // Bellatrix
+        { ra: 5.533,  dec: -0.299, mag: 0.85 },                          // Mintaka (belt)
+        { ra: 5.604,  dec: -1.202, mag: 0.86 },                          // Alnilam (belt)
+        { ra: 5.679,  dec: -1.943, mag: 0.85 },                          // Alnitak (belt)
+        { ra: 5.242,  dec: -8.202, mag: 0.96, color: [205, 225, 255] }, // Rigel
+        { ra: 5.795,  dec: -9.670, mag: 0.78 },                          // Saiph
+        // Gemini
+        { ra: 7.576,  dec: 31.888, mag: 0.82 },                          // Castor
+        { ra: 7.755,  dec: 28.026, mag: 0.86, color: [255, 220, 180] }, // Pollux
+        // Canis Minor / Major
+        { ra: 7.655,  dec:  5.225, mag: 0.92 },                          // Procyon
+        { ra: 6.752,  dec: -16.717, mag: 1.00 },                         // Sirius
+        // Lyra / Cygnus / Aquila
+        { ra: 18.615, dec: 38.784, mag: 0.96, color: [220, 232, 255] }, // Vega
+        { ra: 20.690, dec: 45.280, mag: 0.86 },                          // Deneb
+        { ra: 19.846, dec:  8.868, mag: 0.85 },                          // Altair
+        // Boötes
+        { ra: 14.261, dec: 19.182, mag: 0.94, color: [255, 220, 185] }, // Arcturus
+        // Pegasus / Andromeda square area
+        { ra: 0.140,  dec: 29.090, mag: 0.78 },
+        { ra: 23.063, dec: 28.082, mag: 0.78 },
+        { ra: 0.220,  dec: 15.180, mag: 0.78 }
+      ];
+
+      function generateStars() {
+        stars = [];
+
+        // Dense uniform random background on the celestial sphere. With a
+        // fish-eye field of view we need plenty of stars to keep the sky
+        // well-populated; ~60% more visible solid angle than at narrower
+        // FOV settings.
+        const N = 4800;
+        for (let i = 0; i < N; i++) {
+          // Uniform-area sampling: u random, dec = asin(2v-1).
+          const ra  = Math.random() * Math.PI * 2;
+          const dec = Math.asin(2 * Math.random() - 1);
+          // Skewed magnitude — most stars dim, a few moderately bright.
+          const mag = Math.pow(Math.random(), 4);
+          stars.push({
+            ra, dec, mag,
+            sz: 0.45 + mag * 1.0,
+            color: starColor(),
+            tw: rand(0, Math.PI * 2),
+            tws: rand(0.3, 1.2)
+          });
+        }
+
+        // Named stars layered on top.
+        for (const n of NAMED) {
+          stars.push({
+            ra: n.ra / 24 * Math.PI * 2,
+            dec: n.dec * Math.PI / 180,
+            mag: n.mag,
+            sz: 0.4 + n.mag * 1.4,
+            color: n.color || starColor(),
+            tw: rand(0, Math.PI * 2),
+            tws: 0.5 + Math.random() * 0.6
+          });
+        }
+      }
+
+      function resize() {
+        W = window.innerWidth;
+        H = window.innerHeight;
+
+        sky.width  = Math.floor(W * dpr);
+        sky.height = Math.floor(H * dpr);
+        sky.style.width  = W + 'px';
+        sky.style.height = H + 'px';
+        skyCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        cx = W * 0.5;
+        // Push the projection origin well below the geometric centre.
+        // Combined with the tilt toward the zenith (~80°) this places the
+        // celestial pole just below the bottom edge of the frame, so the
+        // visible stars appear to rotate around an unseen centre off-screen
+        // — emphasising the off-axis composition.
+        cy = H * 0.80;
+        // FOV scale: smaller value = wider angle. ~0.28 gives a fish-eye
+        // look — roughly 140° vertical / 195° diagonal field of view —
+        // packing more sky into the frame while keeping the upper part of
+        // the screen above the simulated horizon.
+        fovScale = Math.max(W, H) * 0.28;
+
+        if (!stars.length) generateStars();
+      }
+
+      // ---- sky background ----------------------------------------------------
+      // The sun is modeled at fixed equatorial coordinates (winter solstice).
+      // Earth's rotation moves it through the local sky during the cycle, and
+      // when it's just below the horizon it lights the sky from below in its
+      // azimuthal direction — giving real, directional dusk/dawn glow.
+      const SUN_RA  = 18 * Math.PI * 2 / 24;
+      const SUN_DEC = -23.4 * Math.PI / 180;
+
+      function sunAltAz(lst) {
+        const ha = lst - SUN_RA;
+        const sd = Math.sin(SUN_DEC), cd = Math.cos(SUN_DEC);
+        const cP = Math.cos(LAT),   sP = Math.sin(LAT);
+        const sH = Math.sin(ha),    cH = Math.cos(ha);
+        const sinAlt = sd * sP + cd * cP * cH;
+        const alt = Math.asin(Math.max(-1, Math.min(1, sinAlt)));
+        const cosAlt = Math.cos(alt);
+        // Guard against degenerate cosAlt at the poles.
+        const sinAz = -cd * sH / (cosAlt || 1e-9);
+        const cosAz = (sd - sinAlt * sP) / ((cosAlt || 1e-9) * cP);
+        const az = Math.atan2(sinAz, cosAz);
+        return { alt, az, ha };
+      }
+
+      function drawSky(lst) {
+        // Base deep-night gradient.
+        const base = skyCtx.createLinearGradient(0, 0, 0, H);
+        base.addColorStop(0.00, '#03050b');
+        base.addColorStop(0.55, '#070b18');
+        base.addColorStop(1.00, '#0a1224');
+        skyCtx.fillStyle = base;
+        skyCtx.fillRect(0, 0, W, H);
+
+        const sun = sunAltAz(lst);
+        const altDeg = sun.alt * 180 / Math.PI;
+
+        // Continuous twilight intensity. We avoid an explicit on/off band so
+        // the glow eases in and out smoothly across the whole cycle. A
+        // Lorentzian-style bell centred at sun alt = -6° (civil twilight) is
+        // strong around the horizon and tapers gently into deep night.
+        const peakAlt = -6;
+        const halfWidth = 14;             // °  — controls bell width
+        const d = (altDeg - peakAlt) / halfWidth;
+        let tw = 1 / (1 + d * d);
+        // Subtract a small floor so deep night really does fade to nothing,
+        // then renormalise so the peak is still 1.
+        tw = Math.max(0, tw - 0.05) / 0.95;
+
+        // Dawn vs dusk palette — Nordic winter twilight. Both phases lean
+        // pink → violet → indigo rather than orange → yellow, with hour
+        // angle (sun east/west of meridian) controlling a continuous
+        // crossfade instead of a hard switch.
+        const haNorm =
+          ((sun.ha % (2 * Math.PI)) + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
+        // mix = 0 fully dawn, 1 fully dusk, smoothly transitioning.
+        const mix = 0.5 * (1 + Math.sin(haNorm));
+        // Inner / mid / outer are increasingly blue-shifted toward the top
+        // of the gradient.
+        const warmInner = lerp([215, 135, 145], [200, 110, 150], mix);
+        const warmMid   = lerp([150, 105, 165], [130,  90, 170], mix);
+        // The outer colour shifts from a deep night-time indigo (tw=0) all
+        // the way toward a clear sky-blue at peak twilight (tw=1), so the
+        // top of the sky reads as the leading edge of dawn/dusk daylight.
+        // Keep green well below blue so the peak reads as proper sky-blue
+        // rather than slipping into teal.
+        const baseCool   = lerp([ 45,  70, 155], [ 40,  60, 165], mix);
+        const coolOuter  = lerp(baseCool, [90, 120, 245], tw);
+
+        // A faint baseline horizon haze is *always* drawn so the bottom of
+        // the sky never goes pitch-dark; on top of it we add the twilight
+        // glow which scales with `tw`. The gradient is radial with its
+        // centre far below the frame and a radius that reaches the top
+        // corners. The result: warm bands curve in concentric arcs over the
+        // bottom of the screen — the same way the lit horizon arcs across a
+        // wide-angle view of the actual sky. Alphas are restrained so even
+        // peak twilight stays subtle.
+        const baseAlpha = 0.12;
+        const glowAlpha = tw;
+        const cgx = W * 0.5;
+        const cgy = H * 1.6;
+        const radius = Math.hypot(cgx, cgy);
+
+        const g = skyCtx.createRadialGradient(cgx, cgy, 0, cgx, cgy, radius);
+        g.addColorStop(0.00, rgba(warmInner,
+          (baseAlpha * 0.50 + glowAlpha * 0.58).toFixed(3)));
+        g.addColorStop(0.36, rgba(warmInner,
+          (baseAlpha * 0.45 + glowAlpha * 0.50).toFixed(3)));
+        g.addColorStop(0.55, rgba(warmInner,
+          (baseAlpha * 0.30 + glowAlpha * 0.38).toFixed(3)));
+        g.addColorStop(0.74, rgba(warmMid,
+          (baseAlpha * 0.18 + glowAlpha * 0.28).toFixed(3)));
+        g.addColorStop(0.90, rgba(coolOuter,
+          (baseAlpha * 0.10 + glowAlpha * 0.32).toFixed(3)));
+        // At the very edge (the darkest top of the screen) we keep a cool
+        // alpha that only ramps in with twilight, so the top of the sky
+        // shifts from pitch-dark at night to a deeper sky-blue cast at peak
+        // dusk/dawn.
+        g.addColorStop(1.00, rgba(coolOuter,
+          (glowAlpha * 0.24).toFixed(3)));
+        skyCtx.fillStyle = g;
+        skyCtx.fillRect(0, 0, W, H);
+
+        return tw;
+      }
+
+      // ---- star rendering ----------------------------------------------------
+      const _p = { x: 0, y: 0, alt: 0 };
+
+      function drawStars(lst, t, twilight) {
+        const skyWash = 1 - twilight * 0.85;
+
+        // Star points
+        for (let i = 0; i < stars.length; i++) {
+          const s = stars[i];
+          const p = project(s.ra, s.dec, lst, _p);
+          if (!p) continue;
+
+          // Atmospheric extinction below ~18° altitude.
+          const altDeg = p.alt * 180 / Math.PI;
+          const ext = altDeg < 18 ? Math.max(0, (altDeg + 1) / 19) : 1;
+          if (ext <= 0) continue;
+
+          const tw = 0.85 + 0.15 * Math.sin(s.tw + t * 0.001 * s.tws);
+
+          // Dimmer stars wash out more in twilight than bright ones do.
+          const magWash = skyWash + (1 - skyWash) * s.mag;
+          const brightness = (0.16 + s.mag * 0.84) * tw * ext * magWash;
+          if (brightness <= 0.005) continue;
+
+          const c = s.color;
+          skyCtx.fillStyle = 'rgba(' +
+            c[0] + ',' + c[1] + ',' + c[2] + ',' + brightness.toFixed(3) + ')';
+          skyCtx.beginPath();
+          skyCtx.arc(p.x, p.y, s.sz, 0, Math.PI * 2);
+          skyCtx.fill();
+
+          // Soft halo only for the brightest stars.
+          if (s.mag > 0.85) {
+            const haloR = s.sz * 4;
+            const g = skyCtx.createRadialGradient(p.x, p.y, 0, p.x, p.y, haloR);
+            g.addColorStop(0, 'rgba(' +
+              c[0] + ',' + c[1] + ',' + c[2] + ',' +
+              (brightness * 0.32).toFixed(3) + ')');
+            g.addColorStop(1, 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',0)');
+            skyCtx.fillStyle = g;
+            skyCtx.beginPath();
+            skyCtx.arc(p.x, p.y, haloR, 0, Math.PI * 2);
+            skyCtx.fill();
+          }
+        }
+      }
+
+      // ---- logo flicker + glow sync -------------------------------------------
+      const logoEl = document.querySelector('.logo');
+      let flickerNext = 0;
+      let flickerAlpha = 1;
+
+      function updateLogo(phase, tw, now) {
+        // Fluorescent-style random flicker: frequent but subtle dips in
+        // brightness, with occasional slightly deeper ones. The text
+        // never fully disappears — it just wavers like a tube light.
+        if (now > flickerNext) {
+          const r = Math.random();
+          if (r < 0.12) {
+            flickerAlpha = 0.90 + Math.random() * 0.06;
+            flickerNext = now + 25 + Math.random() * 50;
+          } else if (r < 0.18) {
+            flickerAlpha = 0.84 + Math.random() * 0.08;
+            flickerNext = now + 30 + Math.random() * 45;
+          } else if (r < 0.21) {
+            flickerAlpha = 0.78 + Math.random() * 0.08;
+            flickerNext = now + 35 + Math.random() * 55;
+          } else {
+            flickerAlpha = 1;
+            flickerNext = now + 50 + Math.random() * 200;
+          }
+        }
+
+        const baseOpacity = 0.88 * flickerAlpha;
+        logoEl.style.opacity = baseOpacity.toFixed(2);
+
+        // Glow colour follows twilight: cool blue-white at night, slightly
+        // warmer pink-white during peak dusk/dawn.
+        const gr = Math.round(210 + tw * 30);   // 210 → 240
+        const gg = Math.round(225 - tw * 40);   // 225 → 185
+        const gb = Math.round(250 - tw * 20);   // 250 → 230
+        const glowSize = (4 + tw * 4).toFixed(0);
+        const glowAlpha = (0.3 + tw * 0.2).toFixed(2);
+        logoEl.style.filter =
+          'drop-shadow(0 0 ' + glowSize + 'px rgba(' +
+          gr + ',' + gg + ',' + gb + ',' + (glowAlpha * flickerAlpha).toFixed(2) + '))';
+      }
+
+      // ---- time-of-day offset -------------------------------------------------
+      // The cycle starts at a phase that corresponds to the user's local time
+      // of day, so if you visit at sunset you see twilight, at midnight you
+      // see deep night, etc. One full cycle = 24h mapped to CYCLE_MS.
+      const todNow = new Date();
+      const todSeconds = todNow.getHours() * 3600 + todNow.getMinutes() * 60 + todNow.getSeconds();
+      const todPhaseOffset = todSeconds / 86400;
+
+      // ---- main loop ---------------------------------------------------------
+      function frame() {
+        const now = performance.now();
+        const elapsed = now - startTime;
+        const phase = (todPhaseOffset + (elapsed % CYCLE_MS) / CYCLE_MS) % 1;
+
+        // Local sidereal time = phase * 24h, with longitude as a phase offset.
+        // (Direction of advance: Earth rotates west-to-east, so LST advances.)
+        const lst = phase * Math.PI * 2 + LON;
+
+        const twilight = drawSky(lst);
+        drawStars(lst, now, twilight);
+        updateLogo(phase, twilight, now);
+
+        requestAnimationFrame(frame);
+      }
+
+      resize();
+      window.addEventListener('resize', resize);
+
+      requestAnimationFrame(frame);
+
+      // ---- fullscreen toggle -------------------------------------------------
+      const btnFs = document.getElementById('btn-fs');
+      btnFs.addEventListener('click', function () {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(function () {});
+        } else {
+          document.exitFullscreen();
+        }
+      });
     })();
   </script>
 </body>
